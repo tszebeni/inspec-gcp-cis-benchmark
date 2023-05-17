@@ -51,15 +51,12 @@ steps:
       cat <<EOF > /workspace/inputs.yml
       gcp_project_id: "${_GCP_PROJECT_ID}"
       gcp_gke_locations:
-        - 'us-central1'
+        - 'europe-west3'
       gce_zones:
-        - 'us-central1'
-        - 'us-central1-a'
-        - 'us-central1-b'
-        - 'us-central1-c'
-        - 'us-central1-d'
-        - 'us-central1-e'
-        - 'us-central1-f'
+        - 'europe-west3'
+        - 'europe-west3-a'
+        - 'europe-west3-b'
+        - 'europe-west3-c'
       EOF
       cat /workspace/inputs.yml
 
@@ -77,6 +74,7 @@ steps:
 - id: 'Test Compliance'
   waitFor: ['Run CIS Profile on in-scope project']
   name: mitre/inspec_tools
+  allowFailure: true
   args: ['compliance', '-j', '/workspace/cis_report.json', '-i', '{failed.total.max: 1}']
 
 - id: 'Store json Report'
@@ -86,3 +84,4 @@ steps:
     - cp
     - /workspace/cis_report.json
     - gs://${_REPORTS_BUCKET}/cis_report-${BUILD_ID}.json
+

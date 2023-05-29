@@ -74,7 +74,7 @@ steps:
       PASSED=$(cat /workspace/cis_report.json | jq '[.controls[].status] | map(select(. == "passed")) | length')
       SKIPPED=$(cat /workspace/cis_report.json | jq '[.controls[].status] | map(select(. == "skipped")) | length')
       FAILED=$(cat /workspace/cis_report.json | jq '[.controls[].status] | map(select(. == "failed")) | length')
-      echo "CIS RESULT:$_GCP_TARGET_PROJECT_ID+$$PASSED-$$FAILED,$$FAILED."
+      echo "CIS RESULT:$_GCP_TARGET_PROJECT_ID+$$PASSED-$$FAILED,$$SKIPPED."
       
 
 - id: 'Test Compliance'

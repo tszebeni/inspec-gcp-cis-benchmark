@@ -17,5 +17,6 @@ FROM cincproject/auditor:4.22.0
 COPY . /share/.
 
 RUN gem install rubocop
+RUN apt-get install jq
 
 ENTRYPOINT ["cinc-auditor"]

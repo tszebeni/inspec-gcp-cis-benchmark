@@ -14,6 +14,7 @@
 
 substitutions:
   _GCP_PROJECT_ID: ''
+  _GCP_TARGET_PROJECT_ID: ''
   _REPORTS_BUCKET: ''
 
 timeout: 3000s
@@ -49,7 +50,7 @@ steps:
     - '-c'
     - |
       cat <<EOF > /workspace/inputs.yml
-      gcp_project_id: "${_GCP_PROJECT_ID}"
+      gcp_project_id: "${_GCP_TARGET_PROJECT_ID}"
       gcp_gke_locations:
         - 'europe-west3'
       gce_zones:
@@ -69,7 +70,7 @@ steps:
     - |
       cinc-auditor exec /share/. -t gcp:// \
       --input-file /workspace/inputs.yml \
-      --reporter cli json:/workspace/cis_report.json html:/workspace/cis_report.html | tee out.json
+      --reporter cli json-min:/workspace/cis_report.json html:/workspace/cis_report.html | tee out.json
 
 - id: 'Test Compliance'
   waitFor: ['Run CIS Profile on in-scope project']
@@ -83,5 +84,13 @@ steps:
   args:
     - cp
     - /workspace/cis_report.json
-    - gs://${_REPORTS_BUCKET}/cis_report-${BUILD_ID}.json
+    - gs://${_REPORTS_BUCKET}/${_GCP_TARGET_PROJECT_ID}/cis_report-${BUILD_ID}.json
+
+- id: 'Store html Report'
+  waitFor: ['Test Compliance']
+  name: gcr.io/cloud-builders/gsutil
+  args:
+    - cp
+    - /workspace/cis_report.html
+    - gs://${_REPORTS_BUCKET}/${_GCP_TARGET_PROJECT_ID}/cis_report-${BUILD_ID}.html
 
